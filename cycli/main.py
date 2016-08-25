@@ -30,11 +30,11 @@ def get_tokens(x):
 
 class Cycli:
 
-    def __init__(self, host, port, username, password, logfile, filename, ssl, read_only, timeout):
+    def __init__(self, host, port, username, password, logfile, filename, ssl, read_only, timeout, bolt):
         self.logfile = logfile
         self.filename = filename
         self.read_only = read_only
-        self.neo4j = Neo4j(host, port, username, password, ssl, timeout)
+        self.neo4j = Neo4j(host, port, username, password, ssl, timeout, bolt)
         self.cypher = Cypher()
 
     def write_to_logfile(self, query, response):
@@ -264,8 +264,9 @@ def print_help():
 @click.option('-l', '--logfile', type=click.File(mode="a", encoding="utf-8"), help="Log every query and its results to a file.")
 @click.option("-f", "--filename", type=click.File(mode="rb"), help="Execute semicolon-separated Cypher queries from a file.")
 @click.option("-s", "--ssl", is_flag=True, help="Use the HTTPS protocol.")
+@click.option("-b", "--bolt", is_flag=True, help="Use the Bolt protocol.")
 @click.option("-r", "--read-only", is_flag=True, help="Do not allow any write queries.")
-def run(host, port, username, version, timeout, password, logfile, filename, ssl, read_only):
+def run(host, port, username, version, timeout, password, logfile, filename, bolt, ssl, read_only):
     if version:
         print("cycli {}".format(__version__))
         sys.exit(0)
@@ -274,7 +275,7 @@ def run(host, port, username, version, timeout, password, logfile, filename, ssl
         password = click.prompt("Password", hide_input=True, show_default=False, type=str)
 
     try:
-        cycli = Cycli(host, port, username, password, logfile, filename, ssl, read_only, timeout)
+        cycli = Cycli(host, port, username, password, logfile, filename, ssl, read_only, timeout, bolt)
 
     except AuthError:
         print("Unauthorized. See cycli --help for authorization instructions.")
