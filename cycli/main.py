@@ -244,27 +244,6 @@ def print_help():
   print(pretty_table(headers, rows))
 
 
-"""
-$ cycli --help
-Usage: cycli [OPTIONS]
-
-Options:
-  -v, --version            Show cycli version and exit.
-  -h, --host TEXT          The host address of Neo4j.
-  -P, --port TEXT          The HTTP(s) port number on which Neo4j is listening. (Default is 7474)
-  -u, --username TEXT      Username for Neo4j authentication.
-  -p, --password TEXT      Password for Neo4j authentication.
-  -t, --timeout INTEGER    Set a global socket timeout for queries.
-  -l, --logfile FILENAME   Log every query and its results to a file.
-  -f, --filename FILENAME  Execute semicolon-separated Cypher queries from a
-                           file.
-  -s, --ssl                Use the HTTPS protocol.
-  -B, --bolt-port          The Bolt port number on which Neo4j is listening. (Default is 7687)
-  --no-bolt                Do not connect using Bolt protocol. (Default is to connect using Bolt + HTTP(s) protocols)
-  -r, --read-only          Do not allow any write queries.
-  --help                   Show this message and exit.
-"""
-
 @click.command()
 @click.option("-v", "--version", is_flag=True, help="Show cycli version and exit.")
 @click.option("-h", "--host", default="localhost", help="The host address of Neo4j.")
