@@ -25,7 +25,7 @@ from cycli.cypher import Cypher
 
 
 def get_tokens(x):
-  return [(Token.Prompt, "> ")]
+    return [(Token.Prompt, "> ")]
 
 
 class Cycli:
@@ -34,8 +34,7 @@ class Cycli:
     self.logfile = logfile
     self.filename = filename
     self.read_only = read_only
-    self.neo4j = Neo4j(host, port, username, password,
-                           ssl, timeout, bolt_port, no_bolt)
+    self.neo4j = Neo4j(host, port, username, password, ssl, timeout, bolt_port, no_bolt)
     self.cypher = Cypher()
 
   def write_to_logfile(self, query, response):
@@ -52,12 +51,10 @@ class Cycli:
 
   @staticmethod
   def write_to_csvfile(headers, rows):
-    filename = "cycli {}.csv".format(
-      datetime.now().strftime("%Y-%m-%d at %I.%M.%S %p"))
+    filename = "cycli {}.csv".format(datetime.now().strftime("%Y-%m-%d at %I.%M.%S %p"))
 
     with open(filename, "wt") as csvfile:
-      csvwriter = csv.writer(csvfile, quotechar=str(
-        '"'), quoting=csv.QUOTE_NONNUMERIC, delimiter=str(","))
+      csvwriter = csv.writer(csvfile, quotechar=str('"'), quoting=csv.QUOTE_NONNUMERIC, delimiter=str(","))
       csvwriter.writerow(headers)
 
       for row in rows:
@@ -84,16 +81,11 @@ class Cycli:
 
       return
 
-    click.secho(
-      " ______     __  __     ______     __         __    ", fg="red")
-    click.secho(
-      "/\  ___\   /\ \_\ \   /\  ___\   /\ \       /\ \   ", fg="yellow")
-    click.secho(
-      "\ \ \____  \ \____ \  \ \ \____  \ \ \____  \ \ \  ", fg="green")
-    click.secho(
-      " \ \_____\  \/\_____\  \ \_____\  \ \_____\  \ \_\ ", fg="blue")
-    click.secho(
-      "  \/_____/   \/_____/   \/_____/   \/_____/   \/_/ ", fg="magenta")
+    click.secho(" ______     __  __     ______     __         __    ", fg="red")
+    click.secho("/\  ___\   /\ \_\ \   /\  ___\   /\ \       /\ \   ", fg="yellow")
+    click.secho("\ \ \____  \ \____ \  \ \ \____  \ \ \____  \ \ \  ", fg="green")
+    click.secho(" \ \_____\  \/\_____\  \ \_____\  \ \_____\  \ \_\ ", fg="blue")
+    click.secho("  \/_____/   \/_____/   \/_____/   \/_____/   \/_/ ", fg="magenta")
 
     msg = "\nUsing Bolt." if self.neo4j.graph.address.bolt_port else ""
 
@@ -111,8 +103,7 @@ class Cycli:
 
     buff = CypherBuffer(
       accept_action=AcceptAction.RETURN_DOCUMENT,
-      history=FileHistory(
-        filename=os.path.expanduser('~/.cycli_history')),
+      history=FileHistory(filename=os.path.expanduser('~/.cycli_history')),
       completer=completer,
       complete_while_typing=True,
     )
@@ -125,8 +116,7 @@ class Cycli:
       key_bindings_registry=CypherBinder.registry
     )
 
-    cli = CommandLineInterface(
-      application=application, eventloop=create_eventloop())
+    cli = CommandLineInterface(application=application, eventloop=create_eventloop())
 
     try:
       while True:
@@ -144,31 +134,22 @@ class Cycli:
 
     if self.cypher.is_a_write_query(query) and self.read_only:
       print("Query aborted. You are in read-only mode.")
-
     elif query in ["quit", "exit"]:
       raise UserWantsOut
-
     elif query == "help":
       print_help()
-
     elif query == "refresh":
       self.neo4j.refresh()
-
     elif query == "schema":
       self.neo4j.print_schema()
-
     elif query == "schema-indexes":
       self.neo4j.print_indexes()
-
     elif query == "schema-constraints":
       self.neo4j.print_constraints()
-
     elif query == "schema-labels":
       self.neo4j.print_labels()
-
     elif query == "schema-rels":
       self.neo4j.print_relationship_types()
-
     elif query.startswith("env"):
       if query == "env":
         for key, value in self.neo4j.parameters.items():
@@ -202,8 +183,7 @@ class Cycli:
       query = query[len("save-csv "):] if save_csv else query
 
       if count <= 0 or not query:
-        print(
-          "Check your syntax. cycli expects run-{n} {query} where {n} is an integer > 0 and {query} is a Cypher query.")
+        print("Check your syntax. cycli expects run-{n} {query} where {n} is an integer > 0 and {query} is a Cypher query.")
         return
 
       total_duration = 0
@@ -221,13 +201,11 @@ class Cycli:
         if error is False:
           print(pretty_table(headers, rows))
 
-          ms = "Run {}: {} ms\n".format(
-            index + 1, duration) if run_n else "{} ms".format(duration)
+          ms = "Run {}: {} ms\n".format(index + 1, duration) if run_n else "{} ms".format(duration)
           print(ms)
 
           if profile:
             self.neo4j.print_profile(profile)
-
           if save_csv:
             self.write_to_csvfile(headers, rows)
         else:
@@ -287,7 +265,6 @@ Options:
   --help                   Show this message and exit.
 """
 
-
 @click.command()
 @click.option("-v", "--version", is_flag=True, help="Show cycli version and exit.")
 @click.option("-h", "--host", default="localhost", help="The host address of Neo4j.")
@@ -307,19 +284,14 @@ def run(host, port, username, version, timeout, password, logfile, filename, ssl
     sys.exit(0)
 
   if username and not password:
-    password = click.prompt(
-      "Password", hide_input=True, show_default=False, type=str)
+    password = click.prompt("Password", hide_input=True, show_default=False, type=str)
 
   try:
-    cycli = Cycli(host, port, username, password, logfile,
-                      filename, ssl, read_only, timeout, bolt_port, no_bolt)
-
+    cycli = Cycli(host, port, username, password, logfile, filename, ssl, read_only, timeout, bolt_port, no_bolt)
   except AuthError:
     print("Unauthorized. See cycli --help for authorization instructions.")
-
   except ConnectionError:
     print("Connection refused. Is Neo4j turned on?")
-
   else:
     cycli.run()
 
