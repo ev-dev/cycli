@@ -44,20 +44,20 @@ class Neo4j:
     if timeout is not None:
       http.socket_timeout = timeout
 
-  host_port = "{host}:{port}".format(host=host, port=port)
-  uri = "{scheme}://{host_port}/db/data/".format(scheme="https" if ssl else "http", host_port=host_port)
+    host_port = "{host}:{port}".format(host=host, port=port)
+    uri = "{scheme}://{host_port}/db/data/".format(scheme="https" if ssl else "http", host_port=host_port)
 
-  if no_bolt:
-    self.graph = Graph(uri, user=username, password=password, secure=ssl)
-  else:
-    self.graph = Graph(uri, user=username, password=password, secure=ssl, bolt_port=int(bolt_port))
+    if no_bolt:
+      self.graph = Graph(uri, user=username, password=password, secure=ssl)
+    else:
+      self.graph = Graph(uri, user=username, password=password, secure=ssl, bolt_port=int(bolt_port))
 
-  try:
-    self.neo4j_version = self.graph.neo4j_version
-  except Unauthorized:
-    raise AuthError(uri)
-  except SocketError:
-    raise ConnectionError(uri)
+    try:
+      self.neo4j_version = self.graph.neo4j_version
+    except Unauthorized:
+      raise AuthError(uri)
+    except SocketError:
+      raise ConnectionError(uri)
 
   def cypher(self, statement):
     error = False
@@ -133,27 +133,27 @@ class Neo4j:
     headers = ["Labels"]
     rows = [[x] for x in self.get_labels()]
 
-  print(pretty_table(headers, rows))
+    print(pretty_table(headers, rows))
 
   def print_relationship_types(self):
     headers = ["Relationship Types"]
     rows = [[x] for x in self.get_relationship_types()]
 
-  print(pretty_table(headers, rows))
+    print(pretty_table(headers, rows))
 
   def print_constraints(self):
     headers = ["Constraints"]
     constraints = self.get_constraints()
     rows = [[x] for x in self.format_constraints_indexes(constraints)]
 
-  print(pretty_table(headers, rows))
+    print(pretty_table(headers, rows))
 
   def print_indexes(self):
     headers = ["Indexes"]
     indexes = self.get_indexes()
     rows = [[x] for x in self.format_constraints_indexes(indexes)]
 
-  print(pretty_table(headers, rows))
+    print(pretty_table(headers, rows))
 
   def format_constraints_indexes(self, values):
     return [":{}({})".format(value["label"], ",".join(value["property_keys"])) for value in values]
@@ -177,16 +177,16 @@ class Neo4j:
     version = profile.arguments["version"]
     runtime = profile.arguments["runtime"]
 
-  print("")
-  print("Planner: {}".format(planner))
-  print("Version: {}".format(version))
-  print("Runtime: {}".format(runtime))
-  print("")
+    print("")
+    print("Planner: {}".format(planner))
+    print("Version: {}".format(version))
+    print("Runtime: {}".format(runtime))
+    print("")
 
-  headers = ["Operator", "Estimated Rows", "Rows", "DB Hits", "Variables"]
-  rows = []
+    headers = ["Operator", "Estimated Rows", "Rows", "DB Hits", "Variables"]
+    rows = []
 
-  for n in reversed(walk(profile)):
+    for n in reversed(walk(profile)):
       operator = n.operator_type
       estimated_rows = int(n.arguments["EstimatedRows"])
       rows_ = n.arguments["Rows"]
@@ -195,4 +195,4 @@ class Neo4j:
 
       rows.append([operator, estimated_rows, rows_, db_hits, variables])
 
-  print(pretty_table(headers, rows))
+    print(pretty_table(headers, rows))
