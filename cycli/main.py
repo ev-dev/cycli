@@ -30,11 +30,11 @@ def get_tokens(x):
 
 class Cycli:
 
-    def __init__(self, host, port, username, password, logfile, filename, ssl, read_only, timeout, bolt):
+    def __init__(self, host, port, username, password, logfile, filename, ssl, read_only, timeout, bolt_port, no_bolt):
         self.logfile = logfile
         self.filename = filename
         self.read_only = read_only
-        self.neo4j = Neo4j(host, port, username, password, ssl, timeout, bolt)
+        self.neo4j = Neo4j(host, port, username, password, ssl, timeout, bolt_port, no_bolt)
         self.cypher = Cypher()
 
     def write_to_logfile(self, query, response):
@@ -87,7 +87,7 @@ class Cycli:
         click.secho(" \ \_____\  \/\_____\  \ \_____\  \ \_____\  \ \_\ ", fg="blue")
         click.secho("  \/_____/   \/_____/   \/_____/   \/_____/   \/_/ ", fg="magenta")
 
-        msg = "\nUsing Bolt." if self.neo4j.graph.address.bolt else ""
+        msg = "\nUsing Bolt." if self.neo4j.graph.address.bolt_port else ""
 
         print(msg)
         print("Version: {}".format(__version__))
@@ -254,19 +254,41 @@ def print_help():
     print(pretty_table(headers, rows))
 
 
+"""
+$ cycli --help
+Usage: cycli [OPTIONS]
+
+Options:
+  -v, --version            Show cycli version and exit.
+  -h, --host TEXT          The host address of Neo4j.
+  -P, --port TEXT          The HTTP(s) port number on which Neo4j is listening. (Default is 7474)
+  -u, --username TEXT      Username for Neo4j authentication.
+  -p, --password TEXT      Password for Neo4j authentication.
+  -t, --timeout INTEGER    Set a global socket timeout for queries.
+  -l, --logfile FILENAME   Log every query and its results to a file.
+  -f, --filename FILENAME  Execute semicolon-separated Cypher queries from a
+                           file.
+  -s, --ssl                Use the HTTPS protocol.
+  -B, --bolt-port          The Bolt port number on which Neo4j is listening. (Default is 7687)
+  --no-bolt                Do not connect using Bolt protocol. (Default is to connect using Bolt + HTTP(s) protocols)
+  -r, --read-only          Do not allow any write queries.
+  --help                   Show this message and exit.
+"""
+
 @click.command()
 @click.option("-v", "--version", is_flag=True, help="Show cycli version and exit.")
 @click.option("-h", "--host", default="localhost", help="The host address of Neo4j.")
-@click.option("-P", "--port", default="7474", help="The port number on which Neo4j is listening.")
+@click.option("-P", "--port", default="7474", help="The HTTP(s) port number on which Neo4j is listening. (Default is 7474)")
 @click.option("-u", "--username", help="Username for Neo4j authentication.")
 @click.option("-p", "--password", help="Password for Neo4j authentication.")
 @click.option("-t", "--timeout", help="Set a global socket timeout for queries.", type=click.INT)
 @click.option('-l', '--logfile', type=click.File(mode="a", encoding="utf-8"), help="Log every query and its results to a file.")
 @click.option("-f", "--filename", type=click.File(mode="rb"), help="Execute semicolon-separated Cypher queries from a file.")
 @click.option("-s", "--ssl", is_flag=True, help="Use the HTTPS protocol.")
-@click.option("-b", "--bolt", is_flag=True, help="Use the Bolt protocol.")
+@click.option("-B", "--bolt-port", default="7687", help="The Bolt port number on which Neo4j is listening. (Default is 7687)")
+@click.option("--no-bolt", is_flag=True, help="Do not connect using Bolt protocol. (Default is to connect using Bolt + HTTP(s) protocols)")
 @click.option("-r", "--read-only", is_flag=True, help="Do not allow any write queries.")
-def run(host, port, username, version, timeout, password, logfile, filename, bolt, ssl, read_only):
+def run(host, port, username, version, timeout, password, logfile, filename, ssl, bolt_port, no_bolt, read_only):
     if version:
         print("cycli {}".format(__version__))
         sys.exit(0)
@@ -275,7 +297,7 @@ def run(host, port, username, version, timeout, password, logfile, filename, bol
         password = click.prompt("Password", hide_input=True, show_default=False, type=str)
 
     try:
-        cycli = Cycli(host, port, username, password, logfile, filename, ssl, read_only, timeout, bolt)
+        cycli = Cycli(host, port, username, password, logfile, filename, ssl, read_only, timeout, bolt_port, no_bolt)
 
     except AuthError:
         print("Unauthorized. See cycli --help for authorization instructions.")

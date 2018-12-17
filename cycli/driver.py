@@ -40,14 +40,17 @@ class Neo4j:
 
     parameters = {}
 
-    def __init__(self, host, port, username=None, password=None, ssl=False, timeout=None, bolt=True):
+    def __init__(self, host, port=7474, username=None, password=None, ssl=False, timeout=None, bolt_port=7687, no_bolt=False):
         if timeout is not None:
             http.socket_timeout = timeout
 
         host_port = "{host}:{port}".format(host=host, port=port)
         uri = "{scheme}://{host_port}/db/data/".format(scheme="https" if ssl else "http", host_port=host_port)
 
-        self.graph = Graph(uri, user=username, password=password, bolt=bolt, secure=ssl)
+        if no_bolt:
+            self.graph = Graph(uri, user=username, password=password, secure=ssl)
+        else:
+            self.graph = Graph(uri, user=username, password=password, secure=ssl, bolt_port=int(bolt_port))
 
         try:
             self.neo4j_version = self.graph.neo4j_version

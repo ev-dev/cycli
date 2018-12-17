@@ -30,6 +30,7 @@ $ cycli -u username
 
 You will then be prompted to enter your password. For more options, execute `cycli --help`.
 
+
 ```
 $ cycli --help
 Usage: cycli [OPTIONS]
@@ -37,7 +38,7 @@ Usage: cycli [OPTIONS]
 Options:
   -v, --version            Show cycli version and exit.
   -h, --host TEXT          The host address of Neo4j.
-  -P, --port TEXT          The port number on which Neo4j is listening.
+  -P, --port TEXT          The HTTP(s) port number on which Neo4j is listening. (Default is 7474)
   -u, --username TEXT      Username for Neo4j authentication.
   -p, --password TEXT      Password for Neo4j authentication.
   -t, --timeout INTEGER    Set a global socket timeout for queries.
@@ -45,6 +46,8 @@ Options:
   -f, --filename FILENAME  Execute semicolon-separated Cypher queries from a
                            file.
   -s, --ssl                Use the HTTPS protocol.
+  -B, --bolt-port          The Bolt port number on which Neo4j is listening. (Default is 7687)
+  --no-bolt                Do not connect using Bolt protocol. (Default is to connect using Bolt + HTTP(s) protocols)
   -r, --read-only          Do not allow any write queries.
   --help                   Show this message and exit.
 ```
@@ -196,27 +199,6 @@ The `value` is evaluated with Python's `eval`, so you can also do things like th
 > env["evens"]
 [0, 2, 4, 6, 8]
 ```
-
-## Using `cycli` with Bolt
-
-[Bolt](http://neo4j.com/blog/neo4j-3-0-milestone-1-release/) is Neo4j's new binary protocol. It is still in the
-pre-release stage and `cycli`'s support of Bolt should be considered an alpha feature. You can use Bolt with `cycli` by
-installing [Neo4j 3.0](http://neo4j.com/download/other-releases/), disabling authentication[1], and following the below steps:
-
-```
-$ pip install virtualenv
-$ virtualenv cycli-bolt
-$ source cycli-bolt/bin/activate
-$ pip install cycli
-$ git clone https://github.com/neo4j/neo4j-python-driver.git
-$ cd neo4j-python-driver
-$ python setup.py install
-$ cycli
-```
-
-You will see `Using Bolt.` on startup if you've successfully started `cycli` with the Bolt protocol.
-
-[1]: You can disable authentication by setting `dbms.security.auth_enabled=false` in `conf/neo4j-server.properties`.
 
 ## Credits
 
